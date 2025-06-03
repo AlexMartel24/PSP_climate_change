@@ -49,7 +49,7 @@ barplot(argument, names = , )
 #What should come after the commma to change the color of the bars?
 
 #QUESTION 5: Plot the barplot with a different color
-barplot(beach$Weight, names= beach$Sample, col = "gold")
+barplot(beach$Weight, names= beach$Sample, col = "gold", las =2)
 
 
 #Woohoo! You just worked on your first plot. Remember,the function formats are
@@ -91,7 +91,7 @@ aov(arg1 ~ arg2)
 #The critical value is under Pr(>F)!
 
 #QUESTION 6: Is there a difference in weight between the animals?
-aov(beach$Weight ~ beach$Animal)
+summary(aov(beach$Weight ~ beach$Animal))
 
 #Congrats! You just ran a two-way ANOVA test! These are the results papers are
 #written off of!
@@ -107,4 +107,4 @@ aov(beach$Weight ~ beach$Animal)
 #---------Part 4--------------#
 #BONUS QUESTION: Is there a difference in weight between tidal zones?
 
-aov(beach$Weight ~ beach$Zone)
+summary(aov(beach$Weight ~ beach$Zone))
