@@ -1,0 +1,121 @@
+---
+title: "Project 2_Martel"
+output: html_document
+date: "2025-06-05"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+library(ggplot2)
+```
+
+
+```{r Loading Data}
+vaccine_admin <- read.csv("covid-19-progress-county-051021.csv")
+```
+
+```{r trimws}
+vaccine_admin$county <- trimws(vaccine_admin$county, which = "both")
+```
+
+```{r formatting dates}
+vaccine_admin$administered_date <- as.Date(vaccine_admin$administered_date, format = "%Y-%m-%d")
+```
+
+```{r subset}
+vaccine_CA <- subset(vaccine_admin, county == "All CA Counties")
+```
+
+```{r calculating percentage}
+CA_pop <- c(39466917)
+
+vaccine_CA$partial_percent <- (vaccine_CA$cumulative_at_least_one_dose/CA_pop)*100
+vaccine_CA$partial_percent <- round(vaccine_CA$partial_percent, digits = 2)
+
+vaccine_CA$fully_percent <- round(((vaccine_CA$cumulative_fully_vaccinated/CA_pop)*100), digits = 2)
+```
+
+```{r plotting percentages}
+names(vaccine_CA)
+
+ggplot(data = vaccine_CA, aes(x = administered_date, y = partial_percent)) + geom_area (fill= "gold")
+                                                                                                                                   
+ggplot(data = vaccine_CA, aes(x = administered_date, y = partial_percent)) +
+  geom_area(fill = "gold", alpha = 0.4) + 
+  geom_area(aes(x = administered_date, y = fully_percent), fill="blue", alpha = 0.4)                                                                                                                                   
+```
+
+```{r horizontal line}
+ggplot(data=vaccine_CA, aes(x = administered_date, y = partial_percent)) + geom_area(fill= "gold") +geom_area(aes(x=administered_date, y= fully_percent), fill="blue") + ylim(0,100) + geom_hline(yintercept = 80, linetype = "longdash")
+```
+
+```{r summary overlay}
+vaccine_CA$wk_avg <- zoo::rollmean(vaccine_CA$total_doses, k = 7, fill = NA)
+
+vaccine_CA$wk_avg <- round(vaccine_CA$wk_avg, digits = 0)
+
+ggplot(data = vaccine_CA, aes(x= administered_date, y= total_doses)) + geom_col(fill = "pink") + scale_y_continuous() +geom_line(data= vaccine_CA, aes(x= administered_date, y= wk_avg), na.rm = T, color= "brown")
+```
+
+```{r subset county}
+SF <- subset(vaccine_admin, county == "San Francisco")
+```
+
+```{r calculating county percentages}
+county_pop <- c(815000)
+
+SF$partial_percent <- (SF$cumulative_at_least_one_dose/county_pop)*100
+SF$partial_percent <- round(SF$partial_percent, digits= 2)
+
+SF$fully_percent <- round(((SF$cumulative_fully_vaccinated/county_pop)*100), digits= 2)
+```
+
+```{r plot partial county percent}
+ggplot(data= SF, aes(x= administered_date, y= partial_percent)) +geom_area(fill="orange")
+```
+
+```{r plot fully county percent}
+ggplot(data= SF, aes(x= administered_date, y= fully_vaccinated)) +geom_area(fill="lightblue") 
+```
+
+```{r}
+SFplot <-ggplot(data= SF, aes(x= administered_date, y= partial_percent)) +geom_area(fill="orange") + geom_area(aes(x= administered_date, y= fully_percent), fill="lightblue")
+```
+
+```{r labels for plot}
+SFplot + labs(x = "Date_of_vaccine", y = "vaccination_rate", title = "SF_vaccine_data")
+
+```
+
+```{r}
+SF$wk_avg <- zoo::rollmean(SF$total_doses , k = 7, fill = NA)
+SF$wk_avg <- round(SF$wk_avg, digits = 0)
+```
+
+```{r}
+ggplot(data = SF, aes(x= administered_date, y= total_doses)) + geom_col(fill = "pink") + scale_y_continuous() +geom_line(data= SF, aes(x= administered_date, y= wk_avg), na.rm = T, color= "lightgreen")
+```
+
