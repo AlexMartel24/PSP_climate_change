@@ -1,0 +1,78 @@
+---
+title: "Project 3_Martel"
+output: html_document
+date: "2025-06-09"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r, echo=FALSE}
+library("ggplot2")
+library("RColorBrewer")
+library("dplyr")
+```
+
+```{r}
+COVIDraw <- read.csv("us-counties.csv")
+```
+
+```{r}
+View(COVIDraw)
+class(COVIDraw$date)
+```
+```{r}
+COVIDraw$date <- as.Date(COVIDraw$date)
+class(COVIDraw$date)
+```
+
+```{r}
+CaliCounties <- subset(COVIDraw, state == "California")
+View(CaliCounties)
+```
+
+```{r}
+BayAreaCounties <- subset(CaliCounties, county == "San Francisco" | county =="Alameda" | county == "Santa Clara" | county == "Napa" | county == "Contra Costa" | county == "Solano" | county == "Marin" | county == "San Mateo" | county == "Sonoma")
+
+View(BayAreaCounties)
+```
+
+```{r}
+ggplot(data = BayAreaCounties) + geom_point(aes(x=date, y= cases))
+```
+
+```{r}
+ggplot(data = BayAreaCounties) + geom_point(aes( x = date, y = cases, color= county)) + scale_color_brewer(palette = "Spectral")
+```
+
+```{r}
+ggplot(data = BayAreaCounties) + geom_point(aes( x = date, y = cases, color= county)) + scale_color_brewer(palette = "Spectral") + scale_x_date(date_labels = "%b %y", date_breaks = "1 month") +
+  ylab("cummulative covid cases") + labs(title = "Covid Cases in Bay Area Counties", color = "county")
+```
+
+```{r}
+ggplot(data = BayAreaCounties) + geom_point(aes( x = date, y = cases, color= county)) + scale_color_brewer(palette = "Spectral") + scale_x_date(date_labels = "%b %y", date_breaks = "1 month") +
+  ylab("cummulative covid cases") + labs(title = "Covid Cases in Bay Area Counties", color = "county") + guides(colour = guide_legend(override.aes = list(size = 5))) +
+  theme_bw() + theme(panel.grid.minor.x = element_blank(), axis.title.x = element_blank(), legend.position = "bottom", legend.title = element_text(face = "bold"))
+```
